@@ -3,23 +3,16 @@
 ########################################
 # BUILDER STAGE
 ########################################
-FROM python:3.13-slim-trixie@sha256:079601253d5d25ae095110937ea8cfd7403917b53b077870bccd8b026dc7c42f AS builder
+FROM python:3.13-slim-trixie AS builder
 
-# Build-time package versions
-ARG BUILD_ESSENTIAL_VERSION=12.12
-ARG LIBPQ_DEV_VERSION=17.6-0+deb13u1
-ARG LIBCURL4_OPENSSL_DEV_VERSION=8.14.1-2
-ARG LIBSSL_DEV_VERSION=3.5.1-1+deb13u1
-ARG PKG_CONFIG_VERSION=1.8.1-4
-
-# Install build tools (only in builder stage)
+# Install build tools (no pinned versions)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        build-essential=${BUILD_ESSENTIAL_VERSION} \
-        libpq-dev=${LIBPQ_DEV_VERSION} \
-        libcurl4-openssl-dev=${LIBCURL4_OPENSSL_DEV_VERSION} \
-        libssl-dev=${LIBSSL_DEV_VERSION} \
-        pkg-config=${PKG_CONFIG_VERSION} && \
+        build-essential \
+        libpq-dev \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        pkg-config && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -34,13 +27,13 @@ RUN pip install --no-cache-dir -r /tmp/requirements.txt
 ########################################
 # RUNTIME STAGE
 ########################################
-FROM python:3.13-slim-trixie@sha256:079601253d5d25ae095110937ea8cfd7403917b53b077870bccd8b026dc7c42f AS runtime
+FROM python:3.13-slim-trixie AS runtime
 
-# Metadata for final image
+# Metadata
 LABEL org.opencontainers.image.source="https://github.com/sassanix/Warracker"
 LABEL org.opencontainers.image.description="Warracker - Warranty Tracker"
 
-# Install runtime dependencies (version-agnostic)
+# Install runtime packages (no pinned versions)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         nginx \
