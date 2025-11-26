@@ -259,7 +259,7 @@ header .container {
 
 @media (max-width: 768px) {
   .main-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: 0fr 1fr;
   }
 }
 
